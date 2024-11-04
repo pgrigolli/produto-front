@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:produto_front/produto.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class UpdateProdutoForm extends StatefulWidget {
   final Produto produto;
@@ -41,20 +43,21 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
     super.dispose();
   }
 
-  void _atualizarProduto() {
-    if (_formKey.currentState!.validate()) {
-      // Monta o corpo da atualização
-      final body = {
-        "description": _descriptionController.text,
-        "price": double.tryParse(_priceController.text) ?? 0.0,
-        "quantity": int.tryParse(_quantityController.text) ?? 0,
-        "date": DateTime.tryParse(_dateController.text),
-      };
-      final String apiUrl = "http://localhost:3000/produtos";
-      // Chame a função para enviar os dados para a API
-      // Exemplo:
-      // atualizarProdutoAPI(widget.produto.id, body);
-      http.put(url)
+    void _atualizarProduto() {
+      if (_formKey.currentState!.validate()) {
+        // Monta o corpo da atualização
+        final body = jsonEncode({
+          "description": _descriptionController.text,
+          "price": _priceController.text,
+          "quantity": _quantityController.text,
+          "date": _dateController.text,
+        });
+
+        final String apiUrl = "http://localhost:3000/produtos/${widget.produto.id}";
+
+        print(body);
+        http.put(Uri.parse(apiUrl),
+        body: body);
     }
   }
 
@@ -71,17 +74,7 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
           child: Column(
             children: [
               TextFormField(
-                controller: _nomeController,
-                decoration: InputDecoration(labelText: "Nome"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, insira o nome";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _descricaoController,
+                controller: _descriptionController,
                 decoration: InputDecoration(labelText: "Descrição"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -91,12 +84,22 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
                 },
               ),
               TextFormField(
-                controller: _precoController,
+                controller: _priceController,
                 decoration: InputDecoration(labelText: "Preço"),
-                keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Por favor, insira o preço";
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _quantityController,
+                decoration: InputDecoration(labelText: "Quantidade"),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Por favor, insira a quantidade";
                   }
                   if (double.tryParse(value) == null) {
                     return "Insira um número válido";

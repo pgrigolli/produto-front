@@ -1,5 +1,6 @@
 // lista_produtos.dart
 import 'package:flutter/material.dart';
+import 'package:produto_front/update_produto_form.dart';
 import 'produto.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,17 +11,7 @@ void mostrarDetalhesProduto(BuildContext context, Produto produto){
   showDialog(
     context: context, 
     builder: (BuildContext context){
-      return AlertDialog(
-        title: Text(produto.description),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Id: ${produto.id}"),
-            Text("Preço: ${produto.price}"),
-            Text("Quantidade: ${produto.quantity}")
-          ]
-        )
-      );
+      return UpdateProdutoForm(produto: produto);
     }
     );
   
