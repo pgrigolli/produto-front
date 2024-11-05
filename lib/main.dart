@@ -3,6 +3,7 @@ import 'package:produto_front/lista_produtos.dart';
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: Scaffold(
       appBar: AppBar(
         title: const Text("Produto-Front"),
@@ -10,6 +11,5 @@ void main() {
       ),
       body: const ListaProdutos(),
     ),
-
   ));
 }
