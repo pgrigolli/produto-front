@@ -3,19 +3,14 @@ import 'package:produto_front/produto.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class UpdateProdutoForm extends StatefulWidget {
-  final Produto produto;
+  final int produtoId; // ID do produto passado ao abrir a tela
 
-  UpdateProdutoForm({required this.produto});
+  const UpdateProdutoForm({super.key, required this.produtoId});
 
   @override
   _UpdateProdutoFormState createState() => _UpdateProdutoFormState();
 }
-
-
-
-
 
 class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
   final _formKey = GlobalKey<FormState>();
@@ -30,52 +25,76 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
   void initState() {
     super.initState();
 
-    // Inicializa os controladores com os valores atuais do produto
-    _descriptionController = TextEditingController(text: widget.produto.description);
-    _priceController = TextEditingController(text: widget.produto.price.toString());
-    _quantityController = TextEditingController(text: widget.produto.quantity.toString());
-    _dateController = TextEditingController(text: widget.produto.date.toString());
+    // Inicializa os controladores
+    _descriptionController = TextEditingController();
+    _priceController = TextEditingController();
+    _quantityController = TextEditingController();
+    _dateController = TextEditingController();
+
+    // Carrega os dados do produto e preenche os controladores
+    fetchProdutoById();
   }
 
-  @override
-  void dispose() {
-    // Limpa os controladores quando o widget for removido da árvore
-    _descriptionController.dispose();
-    _priceController.dispose();
-    _quantityController.dispose();
-    _dateController.dispose();
-    super.dispose();
-  }
+  // Função para buscar o produto pela ID
+  Future<void> fetchProdutoById() async {
+    final String apiUrl = "http://localhost:3000/produtos/${widget.produtoId}";
+    final response = await http.get(Uri.parse(apiUrl));
 
-    void _atualizarProduto() {
-      if (_formKey.currentState!.validate()) {
-        // Monta o corpo da atualização
-        final body = jsonEncode({
-          "description": _descriptionController.text,
-          "price": _priceController.text,
-          "quantity": _quantityController.text,
-          "date": _dateController.text,
-        });
+    if (response.statusCode == 200) {
+      final dadosJson = json.decode(response.body);
+      final produtoData = dadosJson is List ? dadosJson.first : dadosJson;
+      final produto = Produto.fromJson(produtoData);
 
-        final String apiUrl = "http://localhost:3000/produtos/${widget.produto.id}";
-
-        print(body);
-        http.put(Uri.parse(apiUrl),
-        body: body,
-        headers: {"Content-Type": "application/json"}
-        );
-
+      setState(() {
+        _descriptionController.text = produto.description;
+        _priceController.text = produto.price.toString();
+        _quantityController.text = produto.quantity.toString();
+        _dateController.text = produto.date.toString();
+      });
+    } else {
+      throw Exception('Falha ao carregar os dados do produto');
     }
   }
 
+  // Função para deletar um produto
+  Future<void> deleteProduto(int id) async {
+    final String apiUrl = "http://localhost:3000/produtos/$id";
+    final response = await http.delete(Uri.parse(apiUrl));
 
-Future<void> showConfirmationDialog(BuildContext context, String message) async {
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao deletar produto');
+    }
+  }
+
+  // Função para atualizar o produto
+  void _atualizarProduto() {
+    if (_formKey.currentState!.validate()) {
+      final String apiUrl =
+          "http://localhost:3000/produtos/${widget.produtoId}";
+      final body = jsonEncode({
+        "description": _descriptionController.text,
+        "price": _priceController.text,
+        "quantity": _quantityController.text,
+        "date": _dateController.text,
+      });
+
+      http.put(
+        Uri.parse(apiUrl),
+        body: body,
+        headers: {"Content-Type": "application/json"},
+      );
+    }
+  }
+
+  // Função para mostrar o diálogo de confirmação
+  Future<void> showConfirmationDialog(
+      BuildContext context, String message) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // Impede que o diálogo seja fechado ao tocar fora dele
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmação'),
+          title: const Text('Atualizar Produto'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -87,7 +106,7 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
@@ -95,8 +114,7 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
               onPressed: () {
                 _atualizarProduto();
                 Navigator.of(context).pop(); // Fecha o diálogo
-                Navigator.of(context).pop(); // Fecha os detalhes do item
-                
+                Navigator.of(context).pop(); // Fecha a tela de atualização
               },
             ),
           ],
@@ -105,14 +123,57 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
     );
   }
 
+  Future<void> showDeleteConfirmationDialog(
+      BuildContext context, String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Deletar Produto'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirmar'),
+              onPressed: () {
+                deleteProduto(widget.produtoId);
+                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop(); // Fecha a tela de deleção
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-
+  @override
+  void dispose() {
+    // Limpa os controladores quando o widget for removido
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _quantityController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Atualizar Produto"),
+        title: const Text("Detalhes do Produto"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -122,7 +183,7 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
             children: [
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: "Descrição"),
+                decoration: const InputDecoration(labelText: "Descrição"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Por favor, insira a descrição";
@@ -132,7 +193,7 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
               ),
               TextFormField(
                 controller: _priceController,
-                decoration: InputDecoration(labelText: "Preço"),
+                decoration: const InputDecoration(labelText: "Preço"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Por favor, insira o preço";
@@ -142,7 +203,7 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
               ),
               TextFormField(
                 controller: _quantityController,
-                decoration: InputDecoration(labelText: "Quantidade"),
+                decoration: const InputDecoration(labelText: "Quantidade"),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -154,14 +215,27 @@ Future<void> showConfirmationDialog(BuildContext context, String message) async 
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
-                  onPressed: () { 
-                  showConfirmationDialog(context, "Você tem certeza?");
-                  },
-                  child: const Text('Atualizar'),
-              )
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        showConfirmationDialog(context, "Você tem certeza?");
+                      },
+                      child: const Text('Atualizar'),
+                    ),
+                    const SizedBox(width: 10), // Espaçamento entre os botões
+                    ElevatedButton(
+                      onPressed: () async {
+                        showDeleteConfirmationDialog(
+                            context, "Você tem certeza?");
+                      },
+                      child: const Text('Deletar'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
