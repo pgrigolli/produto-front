@@ -13,6 +13,10 @@ class UpdateProdutoForm extends StatefulWidget {
   _UpdateProdutoFormState createState() => _UpdateProdutoFormState();
 }
 
+
+
+
+
 class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
   final _formKey = GlobalKey<FormState>();
 
@@ -57,9 +61,52 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
 
         print(body);
         http.put(Uri.parse(apiUrl),
-        body: body);
+        body: body,
+        headers: {"Content-Type": "application/json"}
+        );
+
     }
   }
+
+
+Future<void> showConfirmationDialog(BuildContext context, String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // Impede que o diálogo seja fechado ao tocar fora dele
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmação'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o diálogo
+              },
+            ),
+            TextButton(
+              child: const Text('Confirmar'),
+              onPressed: () {
+                _atualizarProduto();
+                Navigator.of(context).pop(); // Fecha o diálogo
+                Navigator.of(context).pop(); // Fecha os detalhes do item
+                
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +155,13 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
                 },
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _atualizarProduto,
-                child: Text("Atualizar Produto"),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () { 
+                  showConfirmationDialog(context, "Você tem certeza?");
+                  },
+                  child: const Text('Atualizar'),
+              )
               ),
             ],
           ),
