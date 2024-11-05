@@ -63,11 +63,11 @@ class _ListaProdutosState extends State<ListaProdutos> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddProdutoForm(),
+                  builder: (context) => const AddProdutoForm(),
                 ),
               ).then((_) {
                 // Se você estiver utilizando FutureBuilder, pode chamar uma função aqui
-                _refreshProdutos(); // Atualiza a lista de produtos após adicionar
+                _refreshProdutos();// Atualiza a lista de produtos após adicionar
               });
             },
           ),

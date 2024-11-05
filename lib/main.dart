@@ -8,7 +8,7 @@ void main() {
         title: const Text("Produto-Front"),
         centerTitle: true,
       ),
-      body: ListaProdutos(),
+      body: const ListaProdutos(),
     ),
 
   ));

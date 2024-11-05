@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AddProdutoForm extends StatefulWidget {
+  const AddProdutoForm({super.key});
+
   @override
   _AddProdutoFormState createState() => _AddProdutoFormState();
 }
@@ -31,7 +33,7 @@ class _AddProdutoFormState extends State<AddProdutoForm> {
 
   Future<void> _createProduto() async {
     if (_formKey.currentState!.validate()) {
-      final String apiUrl = "http://localhost:3000/produtos"; // URL da sua API
+      const String apiUrl = "http://localhost:3000/produtos"; // URL da sua API
       final body = jsonEncode({
         "description": _descriptionController.text,
         "price": double.parse(_priceController.text),
