@@ -1,16 +1,41 @@
-# produto_front
+# Produto Front
 
-A new Flutter project.
+Este é um projeto front-end feito em Flutter para a [API de produtos](https://github.com/pgrigolli/produto-api).
 
-## Getting Started
+## Tecnologias Usadas
 
-This project is a starting point for a Flutter application.
+- Flutter
 
-A few resources to get you started if this is your first Flutter project:
+## Pré-requisitos
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Antes de começar, você precisará ter instalado e configurado o [Flutter](https://flutter.dev/)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Configuração do Ambiente
+
+### Clonando o Repositório
+
+Clone este repositório para sua máquina local:
+
+```bash
+git clone https://github.com/pgrigolli/produto-front.git
+```
+
+### Executando
+
+Primeiro, entre no diretório onde o projeto foi copiado.
+```bash
+cd produto-front
+```
+Instale as dependencias
+```bash
+flutter pub get
+```
+
+### Este repositório é apenas o FRONT-END, portanto será necessário ter a API rodando. Você pode seguir os passos deste [link](https://github.com/pgrigolli/produto-api)
+
+Execute a aplicação
+```bash
+flutter run
+```
+Ao executar a aplicação, o flutter irá perguntar se quer executar o projeto no navegador ou em um emulador para seu sistema operacional. 
+Caso queira executar no navegador (recomendável), apenas pressione 2 e aguarde.
