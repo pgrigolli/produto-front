@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:produto_front/produto.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -49,7 +50,10 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
         _descriptionController.text = produto.description;
         _priceController.text = produto.price.toString();
         _quantityController.text = produto.quantity.toString();
-        _dateController.text = produto.date.toString();
+
+        final dateFormat = DateFormat('yyyy-MM-dd'); // Formato desejado
+        _dateController.text =
+            dateFormat.format(DateTime.parse(produto.date.toString()));
       });
     } else {
       throw Exception('Falha ao carregar os dados do produto');
@@ -169,6 +173,24 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
     super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _dateController.text = pickedDate
+            .toLocal()
+            .toIso8601String()
+            .split('T')[0]; // Formato YYYY-MM-DD
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -213,6 +235,13 @@ class _UpdateProdutoFormState extends State<UpdateProdutoForm> {
                     return "Insira um número válido";
                   }
                   return null;
+                },
+              ),
+              TextFormField(
+                controller: _dateController,
+                decoration: const InputDecoration(labelText: "Data"),
+                onTap: () {
+                  _selectDate(context);
                 },
               ),
               const SizedBox(height: 20),
