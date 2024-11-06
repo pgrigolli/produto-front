@@ -6,7 +6,12 @@ void main() {
     debugShowCheckedModeBanner: false,
     home: Scaffold(
       appBar: AppBar(
-        title: const Text("Produto-Front"),
+        backgroundColor: const Color.fromARGB(215, 71, 52, 105),
+        title: const Text(
+          "PRODUTO-FRONT",
+          style: TextStyle(
+              color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: const ListaProdutos(),

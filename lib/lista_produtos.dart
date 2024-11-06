@@ -54,8 +54,14 @@ class _ListaProdutosState extends State<ListaProdutos> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xfff2e7d2),
       appBar: AppBar(
-        title: const Text('Lista de Produtos'),
+        backgroundColor: const Color.fromARGB(215, 71, 52, 105),
+        title: const Text(
+          'LISTA DE PRODUTOS',
+          style: TextStyle(
+              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -67,13 +73,14 @@ class _ListaProdutosState extends State<ListaProdutos> {
                 ),
               ).then((_) {
                 // Se você estiver utilizando FutureBuilder, pode chamar uma função aqui
-                _refreshProdutos();// Atualiza a lista de produtos após adicionar
+                _refreshProdutos(); // Atualiza a lista de produtos após adicionar
               });
             },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _refreshProdutos, // Chama a função de atualizar
+            onPressed: _refreshProdutos,
+            // Chama a função de atualizar
           ),
         ],
       ),
