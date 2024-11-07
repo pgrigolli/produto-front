@@ -65,6 +65,7 @@ class _ListaProdutosState extends State<ListaProdutos> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
+            color: Colors.white,
             onPressed: () {
               Navigator.push(
                 context,
@@ -79,6 +80,7 @@ class _ListaProdutosState extends State<ListaProdutos> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
+            color: Colors.white,
             onPressed: _refreshProdutos,
             // Chama a função de atualizar
           ),
